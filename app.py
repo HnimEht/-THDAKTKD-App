@@ -7,7 +7,8 @@ import altair as alt
 
 # --- Load the Model ---
 try:
-    loaded_model = pickle.load(open('-thdaktkd-app/main/trained_model.sav', 'rb'))
+    model_path = os.path.join(os.path.dirname(__file__), 'trained_model.sav')
+    loaded_model = pickle.load(open(model_path, 'rb'))
 except FileNotFoundError:
     st.error("Error: Trained model file not found. Please check the path.")
     loaded_model = None
