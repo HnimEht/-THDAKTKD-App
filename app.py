@@ -5,12 +5,9 @@ import pandas as pd
 import datetime
 import altair as alt
 
-# your link goes here
-link = "https://github.com/HnimEht/-THDAKTKD-App/blob/main/trained_model.sav"
-
 # --- Load the Model ---
 try:
-    loaded_model = pickle.load(open(link.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/"), 'rb'))
+    loaded_model = pickle.load(open('trained_model.sav, 'rb'))
 except FileNotFoundError:
     st.error("Error: Trained model file not found. Please check the path.")
     loaded_model = None
