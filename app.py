@@ -14,7 +14,7 @@ link.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
 
 # --- Load the Model ---
 try:
-    loaded_model = pickle.load(open('/mount/src/-thdaktkd-app/main/trained_model.sav', 'rb'))
+    loaded_model = pickle.load(open('./trained_model.sav', 'rb'))
 except FileNotFoundError:
     st.error("Error: Trained model file not found. Please check the path.")
     loaded_model = None
