@@ -6,7 +6,7 @@ import datetime
 import altair as alt
 
 # your link goes here
-link = ""
+link = "https://github.com/HnimEht/-THDAKTKD-App/blob/main/trained_model.sav"
 
 # note: this will break if a repo/organization or subfolder is named "blob" -- would be ideal to use a fancy regex
 # to be more precise here
