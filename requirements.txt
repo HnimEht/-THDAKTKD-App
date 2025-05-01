@@ -1,6 +1,4 @@
 numpy
-pickle
-streamlit
 pandas
 datetime
 altair
