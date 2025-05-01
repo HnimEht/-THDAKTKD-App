@@ -5,9 +5,16 @@ import pandas as pd
 import datetime
 import altair as alt
 
+# your link goes here
+link = ""
+
+# note: this will break if a repo/organization or subfolder is named "blob" -- would be ideal to use a fancy regex
+# to be more precise here
+link.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
+
 # --- Load the Model ---
 try:
-    loaded_model = pickle.load(open('hnimeht/-thdaktkd-app/main/trained_model.sav', 'rb'))
+    loaded_model = pickle.load(open(link, 'rb'))
 except FileNotFoundError:
     st.error("Error: Trained model file not found. Please check the path.")
     loaded_model = None
