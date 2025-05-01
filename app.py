@@ -4,7 +4,6 @@ import streamlit as st
 import pandas as pd
 import datetime
 import altair as alt
-import os
 
 # your link goes here
 link = "https://github.com/HnimEht/-THDAKTKD-App/blob/main/trained_model.sav"
