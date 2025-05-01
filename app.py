@@ -8,7 +8,7 @@ import altair as alt
 # --- Load the Model ---
 try:
     model_path = 'trained_model.joblib'
-    model = joblib.load(model_path)
+    loaded_model = joblib.load(model_path)
 except FileNotFoundError:
     st.error("Error: Trained model file not found. Please check the path.")
     loaded_model = None
