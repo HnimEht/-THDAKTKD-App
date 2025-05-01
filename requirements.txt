@@ -3,3 +3,4 @@ pandas
 datetime
 altair
 joblib
+scikit-learn
