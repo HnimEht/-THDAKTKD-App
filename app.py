@@ -59,11 +59,6 @@ def display_risk_interpretation(risk_level):
     else:
         st.info("Risk assessment unavailable.")
 
-def save_assessment(user_id, assessment_data):
-    st.session_state.setdefault('assessments', {})
-    st.session_state['assessments'].setdefault(user_id, []).append(assessment_data)
-    st.toast("Assessment saved!", icon="💾")
-
 def load_assessment_history(user_id):
     return st.session_state.get('assessments', {}).get(user_id, [])
 
@@ -100,9 +95,6 @@ def risk_assessment_page():
 
             st.subheader(f"Estimated Diabetes Risk: {risk_level} ({risk_probability * 100:.2f}%)")
             display_risk_interpretation(risk_level)
-
-            # Since login is removed, we can use a fixed user ID or None
-            save_assessment("guest", assessment_data)
         else:
             st.error("Model not loaded. Cannot assess risk.")
 
