@@ -1,6 +1,6 @@
-streamlit
-pandas
 numpy
 pickle
+streamlit
+pandas
 datetime
 altair
