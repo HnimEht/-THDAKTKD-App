@@ -100,15 +100,33 @@ def risk_assessment_page():
 
 def assessment_history_page():
     st.header("Assessment History")
-    # Fabricated data for user 'minh' - 12 months
+    # Fabricated data for user 'minh' - adjusted for weekly view
     current_year = 2024
     minh_history_data = [
         {'timestamp': datetime.datetime(current_year, 6, 1), 'age': 34, 'pregnancies': 0, 'glucose': 115, 'blood_pressure': 82, 'skin_thickness': 26, 'insulin': 60, 'bmi': 25.0, 'diabetes_pedigree_function': 0.58, 'risk_probability': 0.35, 'risk_level': 'Moderate'},
+        {'timestamp': datetime.datetime(current_year, 6, 8), 'age': 34, 'pregnancies': 0, 'glucose': 112, 'blood_pressure': 81, 'skin_thickness': 25, 'insulin': 58, 'bmi': 24.9, 'diabetes_pedigree_function': 0.57, 'risk_probability': 0.34, 'risk_level': 'Moderate'},
+        {'timestamp': datetime.datetime(current_year, 6, 15), 'age': 34, 'pregnancies': 0, 'glucose': 109, 'blood_pressure': 80, 'skin_thickness': 24, 'insulin': 56, 'bmi': 24.8, 'diabetes_pedigree_function': 0.56, 'risk_probability': 0.33, 'risk_level': 'Moderate'},
+        {'timestamp': datetime.datetime(current_year, 6, 22), 'age': 34, 'pregnancies': 0, 'glucose': 106, 'blood_pressure': 79, 'skin_thickness': 23, 'insulin': 54, 'bmi': 24.7, 'diabetes_pedigree_function': 0.55, 'risk_probability': 0.32, 'risk_level': 'Moderate'},
         {'timestamp': datetime.datetime(current_year, 7, 1), 'age': 34, 'pregnancies': 0, 'glucose': 108, 'blood_pressure': 80, 'skin_thickness': 24, 'insulin': 55, 'bmi': 24.8, 'diabetes_pedigree_function': 0.55, 'risk_probability': 0.32, 'risk_level': 'Moderate'},
+        {'timestamp': datetime.datetime(current_year, 7, 8), 'age': 34, 'pregnancies': 0, 'glucose': 105, 'blood_pressure': 79, 'skin_thickness': 23, 'insulin': 53, 'bmi': 24.7, 'diabetes_pedigree_function': 0.54, 'risk_probability': 0.31, 'risk_level': 'Moderate'},
+        {'timestamp': datetime.datetime(current_year, 7, 15), 'age': 34, 'pregnancies': 0, 'glucose': 102, 'blood_pressure': 78, 'skin_thickness': 22, 'insulin': 51, 'bmi': 24.6, 'diabetes_pedigree_function': 0.53, 'risk_probability': 0.30, 'risk_level': 'Moderate'},
+        {'timestamp': datetime.datetime(current_year, 7, 22), 'age': 34, 'pregnancies': 0, 'glucose': 99, 'blood_pressure': 77, 'skin_thickness': 21, 'insulin': 49, 'bmi': 24.5, 'diabetes_pedigree_function': 0.52, 'risk_probability': 0.29, 'risk_level': 'Moderate'},
         {'timestamp': datetime.datetime(current_year, 8, 1), 'age': 34, 'pregnancies': 0, 'glucose': 102, 'blood_pressure': 78, 'skin_thickness': 22, 'insulin': 50, 'bmi': 24.5, 'diabetes_pedigree_function': 0.50, 'risk_probability': 0.28, 'risk_level': 'Moderate'},
+        {'timestamp': datetime.datetime(current_year, 8, 8), 'age': 34, 'pregnancies': 0, 'glucose': 100, 'blood_pressure': 77, 'skin_thickness': 21, 'insulin': 48, 'bmi': 24.4, 'diabetes_pedigree_function': 0.49, 'risk_probability': 0.27, 'risk_level': 'Moderate'},
+        {'timestamp': datetime.datetime(current_year, 8, 15), 'age': 34, 'pregnancies': 0, 'glucose': 98, 'blood_pressure': 76, 'skin_thickness': 20, 'insulin': 46, 'bmi': 24.3, 'diabetes_pedigree_function': 0.48, 'risk_probability': 0.26, 'risk_level': 'Low'},
+        {'timestamp': datetime.datetime(current_year, 8, 22), 'age': 34, 'pregnancies': 0, 'glucose': 96, 'blood_pressure': 75, 'skin_thickness': 19, 'insulin': 44, 'bmi': 24.2, 'diabetes_pedigree_function': 0.47, 'risk_probability': 0.25, 'risk_level': 'Low'},
         {'timestamp': datetime.datetime(current_year, 9, 1), 'age': 35, 'pregnancies': 0, 'glucose': 98, 'blood_pressure': 76, 'skin_thickness': 20, 'insulin': 45, 'bmi': 24.2, 'diabetes_pedigree_function': 0.48, 'risk_probability': 0.25, 'risk_level': 'Low'},
+        {'timestamp': datetime.datetime(current_year, 9, 8), 'age': 35, 'pregnancies': 0, 'glucose': 97, 'blood_pressure': 77, 'skin_thickness': 21, 'insulin': 43, 'bmi': 24.3, 'diabetes_pedigree_function': 0.47, 'risk_probability': 0.24, 'risk_level': 'Low'},
+        {'timestamp': datetime.datetime(current_year, 9, 15), 'age': 35, 'pregnancies': 0, 'glucose': 96, 'blood_pressure': 78, 'skin_thickness': 22, 'insulin': 41, 'bmi': 24.4, 'diabetes_pedigree_function': 0.46, 'risk_probability': 0.23, 'risk_level': 'Low'},
+        {'timestamp': datetime.datetime(current_year, 9, 22), 'age': 35, 'pregnancies': 0, 'glucose': 95, 'blood_pressure': 79, 'skin_thickness': 23, 'insulin': 39, 'bmi': 24.5, 'diabetes_pedigree_function': 0.45, 'risk_probability': 0.15, 'risk_level': 'Low'},
         {'timestamp': datetime.datetime(current_year, 10, 1), 'age': 35, 'pregnancies': 0, 'glucose': 95, 'blood_pressure': 80, 'skin_thickness': 22, 'insulin': 40, 'bmi': 24.5, 'diabetes_pedigree_function': 0.45, 'risk_probability': 0.15, 'risk_level': 'Low'},
+        {'timestamp': datetime.datetime(current_year, 10, 8), 'age': 35, 'pregnancies': 0, 'glucose': 98, 'blood_pressure': 81, 'skin_thickness': 23, 'insulin': 43, 'bmi': 24.6, 'diabetes_pedigree_function': 0.46, 'risk_probability': 0.18, 'risk_level': 'Low'},
+        {'timestamp': datetime.datetime(current_year, 10, 15), 'age': 35, 'pregnancies': 0, 'glucose': 101, 'blood_pressure': 82, 'skin_thickness': 24, 'insulin': 46, 'bmi': 24.7, 'diabetes_pedigree_function': 0.47, 'risk_probability': 0.21, 'risk_level': 'Moderate'},
+        {'timestamp': datetime.datetime(current_year, 10, 22), 'age': 35, 'pregnancies': 0, 'glucose': 104, 'blood_pressure': 83, 'skin_thickness': 25, 'insulin': 49, 'bmi': 24.8, 'diabetes_pedigree_function': 0.48, 'risk_probability': 0.24, 'risk_level': 'Low'},
         {'timestamp': datetime.datetime(current_year, 11, 1), 'age': 35, 'pregnancies': 0, 'glucose': 105, 'blood_pressure': 83, 'skin_thickness': 25, 'insulin': 50, 'bmi': 24.7, 'diabetes_pedigree_function': 0.51, 'risk_probability': 0.29, 'risk_level': 'Moderate'},
+        {'timestamp': datetime.datetime(current_year, 11, 8), 'age': 35, 'pregnancies': 0, 'glucose': 108, 'blood_pressure': 84, 'skin_thickness': 26, 'insulin': 53, 'bmi': 24.8, 'diabetes_pedigree_function': 0.52, 'risk_probability': 0.31, 'risk_level': 'Moderate'},
+        {'timestamp': datetime.datetime(current_year, 11, 15), 'age': 35, 'pregnancies': 0, 'glucose': 111, 'blood_pressure': 85, 'skin_thickness': 27, 'insulin': 56, 'bmi': 24.9, 'diabetes_pedigree_function': 0.53, 'risk_probability': 0.33, 'risk_level': 'Moderate'},
+        {'timestamp': datetime.datetime(current_year, 11, 22), 'age': 35, 'pregnancies': 0, 'glucose': 114, 'blood_pressure': 86, 'skin_thickness': 28, 'insulin': 59, 'bmi': 25.0, 'diabetes_pedigree_function': 0.54, 'risk_probability': 0.35, 'risk_level': 'Moderate'},
         {'timestamp': datetime.datetime(current_year, 12, 1), 'age': 35, 'pregnancies': 0, 'glucose': 112, 'blood_pressure': 86, 'skin_thickness': 27, 'insulin': 58, 'bmi': 24.9, 'diabetes_pedigree_function': 0.54, 'risk_probability': 0.33, 'risk_level': 'Moderate'},
         {'timestamp': datetime.datetime(current_year + 1, 1, 1), 'age': 35, 'pregnancies': 0, 'glucose': 118, 'blood_pressure': 88, 'skin_thickness': 29, 'insulin': 65, 'bmi': 25.1, 'diabetes_pedigree_function': 0.57, 'risk_probability': 0.38, 'risk_level': 'Moderate'},
         {'timestamp': datetime.datetime(current_year + 1, 2, 1), 'age': 36, 'pregnancies': 0, 'glucose': 110, 'blood_pressure': 85, 'skin_thickness': 26, 'insulin': 60, 'bmi': 25.3, 'diabetes_pedigree_function': 0.59, 'risk_probability': 0.40, 'risk_level': 'Moderate'},
@@ -120,35 +138,29 @@ def assessment_history_page():
     df_minh['timestamp'] = pd.to_datetime(df_minh['timestamp'])
     df_minh = df_minh.sort_values(by='timestamp')
 
-    st.subheader("Risk Probability Over Time (12 Months)")
-    chart_risk = alt.Chart(df_minh).mark_line(point=True).encode(
-        x=alt.X('timestamp:T', title='Month'),
-        y=alt.Y('risk_probability:Q', title='Risk Probability'),
-        tooltip=['timestamp:T', 'risk_probability:Q', 'risk_level:N']
-    ).properties(
-        title='Risk Probability Trend'
-    ).interactive()
-    st.altair_chart(chart_risk, use_container_width=True)
+    st.subheader("View Assessment Data By:")
+    view_by = st.radio("", ["Month", "Week"], horizontal=True)
 
-    st.subheader("Glucose Levels Over Time (12 Months)")
-    chart_glucose = alt.Chart(df_minh).mark_line(point=True).encode(
-        x=alt.X('timestamp:T', title='Month'),
-        y=alt.Y('glucose:Q', title='Glucose (mg/dL)'),
-        tooltip=['timestamp:T', 'glucose:Q']
-    ).properties(
-        title='Glucose Level Trend'
-    ).interactive()
-    st.altair_chart(chart_glucose, use_container_width=True)
+    if view_by == "Month":
+        df_minh['time_period'] = df_minh['timestamp'].dt.to_period('M').astype(str)
+        time_title = 'Month'
+    else:
+        df_minh['time_period'] = df_minh['timestamp'].dt.isocalendar().week.astype(str) + '-' + df_minh['timestamp'].dt.year.astype(str)
+        time_title = 'Week'
 
-    st.subheader("Blood Pressure Over Time (12 Months)")
-    chart_bp = alt.Chart(df_minh).mark_line(point=True).encode(
-        x=alt.X('timestamp:T', title='Month'),
-        y=alt.Y('blood_pressure:Q', title='Blood Pressure (mmHg)'),
-        tooltip=['timestamp:T', 'blood_pressure:Q']
+    metrics_to_plot = ["risk_probability", "bmi", "glucose", "blood_pressure", "insulin"]
+    selected_metric = st.selectbox("Select metric to view:", metrics_to_plot)
+    metric_title = selected_metric.replace("_", " ").title()
+
+    st.subheader(f"{metric_title} Over Time (Last 12 Months)")
+    chart_metric = alt.Chart(df_minh).mark_line(point=True).encode(
+        x=alt.X('time_period:O', title=time_title),
+        y=alt.Y(f'{selected_metric}:Q', title=metric_title),
+        tooltip=['timestamp:T', f'{selected_metric}:Q']
     ).properties(
-        title='Blood Pressure Trend'
+        title=f'{metric_title} Trend'
     ).interactive()
-    st.altair_chart(chart_bp, use_container_width=True)
+    st.altair_chart(chart_metric, use_container_width=True)
 
     st.subheader("Personalized Recommendations Based on Risk Trend:")
     if len(df_minh) >= 2:
@@ -364,6 +376,49 @@ def about_page():
     """
     )
 
+# --- Discussion Forum Functionality ---
+def display_posts():
+    if 'posts' not in st.session_state:
+        st.session_state['posts'] = [
+            {'title': 'New to the Community!', 'content': "Hi everyone, I'm new here and looking forward to learning more about diabetes prevention."},
+            {'title': 'Question about Diet', 'content': "What are some good low-sugar snack options?", 'comments': ["Nuts and seeds are a good choice!", "Greek yogurt with berries.", "Vegetable sticks with hummus."]},
+            {'title': 'Exercise Tips', 'content': "Does anyone have advice for staying motivated to exercise regularly?"}
+        ]
+    for i, post in enumerate(st.session_state['posts']):
+        st.subheader(f"{post['title']}")
+        st.markdown(post['content'])
+        if 'comments' in post:
+            with st.expander("View Comments"):
+                for comment in post['comments']:
+                    st.markdown(f"> {comment}")
+        with st.form(key=f'comment_form_{i}'):
+            comment_text = st.text_input("Add a comment:")
+            if st.form_submit_button("Submit Comment"):
+                if 'comments' not in st.session_state['posts'][i]:
+                    st.session_state['posts'][i]['comments'] = []
+                st.session_state['posts'][i]['comments'].append(comment_text)
+                st.rerun()
+
+def create_new_post():
+    with st.form(key='new_post_form'):
+        title = st.text_input("Post Title:")
+        content = st.text_area("Post Content:")
+        if st.form_submit_button("Create Post"):
+            if title and content:
+                new_post = {'title': title, 'content': content}
+                if 'posts' not in st.session_state:
+                    st.session_state['posts'] = []
+                st.session_state['posts'].insert(0, new_post)
+                st.rerun()
+            else:
+                st.warning("Please enter both a title and content for your post.")
+
+def discussion_forum_page():
+    st.header("Community Discussion Forum")
+    create_new_post()
+    st.subheader("Existing Discussions")
+    display_posts()
+
 def main():
     st.title('Diabetes Risk Prediction & Prevention Hub')
 
@@ -372,10 +427,16 @@ def main():
         st.session_state['assessments'] = {}
     if 'show_minh_history' not in st.session_state:
         st.session_state['show_minh_history'] = False
+    if 'posts' not in st.session_state:
+        st.session_state['posts'] = [
+            {'title': 'New to the Community!', 'content': "Hi everyone, I'm new here and looking forward to learning more about diabetes prevention."},
+            {'title': 'Question about Diet', 'content': "What are some good low-sugar snack options?", 'comments': ["Nuts and seeds are a good choice!", "Greek yogurt with berries.", "Vegetable sticks with hummus."]},
+            {'title': 'Exercise Tips', 'content': "Does anyone have advice for staying motivated to exercise regularly?"}
+        ] # Initialize posts with some content
 
     with st.sidebar:
         st.header("Navigation")
-        menu = ["Risk Assessment", "Prevention Articles", "Assessment History", "About"]
+        menu = ["Risk Assessment", "Prevention Articles", "Assessment History", "About", "Discussion Forum"] # Add to menu
         choice = st.selectbox("Go to", menu)
         st.markdown("---")
         st.info("Developed by Healthcare & Coding Enthusiasts with the goal to better Sickness Prevention")
@@ -388,15 +449,8 @@ def main():
         assessment_history_page()
     elif choice == "About":
         about_page()
-
-    # Add fabricated data for 'minh' if it doesn't exist
-    if 'minh' not in st.session_state['assessments']:
-        st.session_state['assessments']['minh'] = [
-            {'timestamp': '2025-05-01T10:00:00', 'age': 35, 'pregnancies': 0, 'glucose': 95, 'blood_pressure': 80, 'skin_thickness': 22, 'insulin': 40, 'bmi': 24.5, 'diabetes_pedigree_function': 0.45, 'risk_probability': 0.15, 'risk_level': 'Low'},
-            {'timestamp': '2025-04-25T14:30:00', 'age': 35, 'pregnancies': 0, 'glucose': 110, 'blood_pressure': 85, 'skin_thickness': 25, 'insulin': 55, 'bmi': 24.8, 'diabetes_pedigree_function': 0.52, 'risk_probability': 0.28, 'risk_level': 'Moderate'},
-            {'timestamp': '2025-04-18T09:15:00', 'age': 34, 'pregnancies': 0, 'glucose': 102, 'blood_pressure': 78, 'skin_thickness': 20, 'insulin': 48, 'bmi': 24.0, 'diabetes_pedigree_function': 0.40, 'risk_probability': 0.18, 'risk_level': 'Low'},
-            {'timestamp': '2025-04-10T16:40:00', 'age': 34, 'pregnancies': 0, 'glucose': 115, 'blood_pressure': 82, 'skin_thickness': 26, 'insulin': 60, 'bmi': 25.0, 'diabetes_pedigree_function': 0.58, 'risk_probability': 0.35, 'risk_level': 'Moderate'},
-        ]
+    elif choice == "Discussion Forum": # Handle new menu item
+        discussion_forum_page()
 
 if __name__ == '__main__':
     main()
