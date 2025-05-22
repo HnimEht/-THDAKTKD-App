@@ -67,29 +67,79 @@ def risk_assessment_page():
     st.header("Diabetes Risk Assessment")
     st.subheader("Enter Your Health Information")
 
-    if 'We' not in st.session_state:
-        st.session_state['We'] = DEFAULT_WEIGHT
-    if 'He' not in st.session_state:
-        st.session_state['He'] = DEFAULT_HEIGHT
+    # Initialize session state for inputs if they don't exist
+    if 'input_age' not in st.session_state: st.session_state['input_age'] = None
+    if 'input_pregnancies' not in st.session_state: st.session_state['input_pregnancies'] = None
+    if 'input_glucose' not in st.session_state: st.session_state['input_glucose'] = None
+    if 'input_blood_pressure' not in st.session_state: st.session_state['input_blood_pressure'] = None
+    if 'input_skin_thickness' not in st.session_state: st.session_state['input_skin_thickness'] = None
+    if 'input_insulin' not in st.session_state: st.session_state['input_insulin'] = None
+    if 'input_weight' not in st.session_state: st.session_state['input_weight'] = None
+    if 'input_height' not in st.session_state: st.session_state['input_height'] = None
+    if 'input_diabetes_pedigree_function' not in st.session_state: st.session_state['input_diabetes_pedigree_function'] = None
 
-    col1, col2 = st.columns(2)
-    age = col1.number_input('Age (years)', min_value=0, max_value=120, value=st.session_state.get('Age', DEFAULT_AGE))
-    pregnancies = col1.number_input('Number of Pregnancies', min_value=0, max_value=20, value=st.session_state.get('Pregnancies', DEFAULT_PREGNANCIES))
-    glucose = col1.number_input('Glucose Level (mg/dL)', min_value=0, max_value=300, value=st.session_state.get('Glucose', DEFAULT_GLUCOSE))
-    blood_pressure = col1.number_input('Blood Pressure (mmHg)', min_value=0, max_value=200, value=st.session_state.get('BloodPressure', DEFAULT_BLOODPRESSURE))
-    skin_thickness = col2.number_input('Skin Thickness (mm)', min_value=0, max_value=100, value=st.session_state.get('SkinThickness', DEFAULT_SKINTHICKNESS))
-    insulin = col2.number_input('Insulin Level (mu U/mL)', min_value=0, max_value=850, value=st.session_state.get('Insulin', DEFAULT_INSULIN))
-    weight = col2.number_input('Weight (kg)', min_value=20, max_value=300, value=st.session_state['We'], on_change=lambda: st.session_state.__setitem__('We', weight))
-    height = col2.number_input('Height (meters)', min_value=0.5, max_value=3.0, value=st.session_state['He'], step=0.01, on_change=lambda: st.session_state.__setitem__('He', height))
-    diabetes_pedigree_function = col1.number_input('Diabetes Pedigree Function', min_value=0.0, max_value=3.0, value=st.session_state.get('DiabetesPedigreeFunction', DEFAULT_DIABETESPEDIGREEFUNCTION), step=0.001)
+    # Create tabs for Basic and Advanced Information
+    tab1, tab2 = st.tabs(["Basic Information", "Advanced Medical Information"])
 
-    bmi = calculate_bmi(weight, height)
-    st.metric("Calculated BMI", f"{bmi:.2f}")
-    st.session_state['BMI'] = bmi
+    with tab1:
+        st.subheader("Personal Details")
+        col1_basic, col2_basic = st.columns(2)
+        age_input = col1_basic.number_input('Age (years)', min_value=0, max_value=120, value=st.session_state['input_age'], key='age_input_key')
+        pregnancies_input = col1_basic.number_input('Number of Pregnancies', min_value=0, max_value=20, value=st.session_state['input_pregnancies'], key='pregnancies_input_key')
+
+        weight_input = col2_basic.number_input('Weight (kg)', min_value=20, max_value=300, value=st.session_state['input_weight'], key='weight_input_key')
+        height_input = col2_basic.number_input('Height (meters)', min_value=0.5, max_value=3.0, value=st.session_state['input_height'], step=0.01, key='height_input_key')
+
+        # Store the current input values in session state
+        st.session_state['input_age'] = age_input
+        st.session_state['input_pregnancies'] = pregnancies_input
+        st.session_state['input_weight'] = weight_input
+        st.session_state['input_height'] = height_input
+
+        # BMI calculation will happen after inputs are finalized (potentially with defaults)
+        bmi = calculate_bmi(
+            st.session_state['input_weight'] if st.session_state['input_weight'] is not None else DEFAULT_WEIGHT,
+            st.session_state['input_height'] if st.session_state['input_height'] is not None else DEFAULT_HEIGHT
+        )
+        st.metric("Calculated BMI", f"{bmi:.2f}")
+        st.session_state['BMI'] = bmi # Store BMI in session state
+
+
+    with tab2:
+        st.subheader("Clinical Parameters")
+        col1_adv, col2_adv = st.columns(2)
+        glucose_input = col1_adv.number_input('Glucose Level (mg/dL)', min_value=0, max_value=300, value=st.session_state['input_glucose'], key='glucose_input_key')
+        blood_pressure_input = col1_adv.number_input('Blood Pressure (mmHg)', min_value=0, max_value=200, value=st.session_state['input_blood_pressure'], key='blood_pressure_input_key')
+        skin_thickness_input = col2_adv.number_input('Skin Thickness (mm)', min_value=0, max_value=100, value=st.session_state['input_skin_thickness'], key='skin_thickness_input_key')
+        insulin_input = col2_adv.number_input('Insulin Level (mu U/mL)', min_value=0, max_value=850, value=st.session_state['input_insulin'], key='insulin_input_key')
+        diabetes_pedigree_function_input = col1_adv.number_input('Diabetes Pedigree Function', min_value=0.0, max_value=3.0, value=st.session_state['input_diabetes_pedigree_function'], step=0.001, key='dpf_input_key')
+
+        # Store the current input values in session state
+        st.session_state['input_glucose'] = glucose_input
+        st.session_state['input_blood_pressure'] = blood_pressure_input
+        st.session_state['input_skin_thickness'] = skin_thickness_input
+        st.session_state['input_insulin'] = insulin_input
+        st.session_state['input_diabetes_pedigree_function'] = diabetes_pedigree_function_input
+
+    st.markdown("---") # Separator between inputs and button
 
     if st.button("Assess Risk"):
         if loaded_model:
-            input_data = [pregnancies, glucose, blood_pressure, skin_thickness, insulin, bmi, diabetes_pedigree_function, age]
+            # Use actual input values, or default if None (left blank by user)
+            final_age = st.session_state['input_age'] if st.session_state['input_age'] is not None else DEFAULT_AGE
+            final_pregnancies = st.session_state['input_pregnancies'] if st.session_state['input_pregnancies'] is not None else DEFAULT_PREGNANCIES
+            final_glucose = st.session_state['input_glucose'] if st.session_state['input_glucose'] is not None else DEFAULT_GLUCOSE
+            final_blood_pressure = st.session_state['input_blood_pressure'] if st.session_state['input_blood_pressure'] is not None else DEFAULT_BLOODPRESSURE
+            final_skin_thickness = st.session_state['input_skin_thickness'] if st.session_state['input_skin_thickness'] is not None else DEFAULT_SKINTHICKNESS
+            final_insulin = st.session_state['input_insulin'] if st.session_state['input_insulin'] is not None else DEFAULT_INSULIN
+            final_weight = st.session_state['input_weight'] if st.session_state['input_weight'] is not None else DEFAULT_WEIGHT
+            final_height = st.session_state['input_height'] if st.session_state['input_height'] is not None else DEFAULT_HEIGHT
+            final_diabetes_pedigree_function = st.session_state['input_diabetes_pedigree_function'] if st.session_state['input_diabetes_pedigree_function'] is not None else DEFAULT_DIABETESPEDIGREEFUNCTION
+
+            # Recalculate BMI with potentially defaulted weight/height for the prediction input
+            final_bmi = calculate_bmi(final_weight, final_height)
+
+            input_data = [final_pregnancies, final_glucose, final_blood_pressure, final_skin_thickness, final_insulin, final_bmi, final_diabetes_pedigree_function, final_age]
             risk_probability = diabetes_prediction_proba(input_data, loaded_model)
             risk_level = get_risk_level(risk_probability)
 
@@ -419,6 +469,108 @@ def discussion_forum_page():
     st.subheader("Existing Discussions")
     display_posts()
 
+# --- Doctor Appointment Page ---
+def doctor_appointment_page():
+    st.header("Doctor Appointment Booking & Management")
+
+    # Dummy data for doctors and hospitals
+    doctors = ["Dr. Alice Smith (Endocrinologist)", "Dr. Bob Johnson (General Practitioner)", "Dr. Carol White (Nutritionist)"]
+    hospitals = ["City General Hospital", "Diabetes Care Clinic", "Wellness Medical Center"]
+    appointment_reasons = ["General Check-up", "Diabetes Management", "Diet Consultation", "Symptoms Review", "Follow-up"]
+
+    st.subheader("Book a New Appointment")
+    with st.form(key='appointment_form'):
+        selected_doctor = st.selectbox("Select Doctor:", doctors, key='doctor_select')
+        selected_hospital = st.selectbox("Select Hospital/Clinic:", hospitals, key='hospital_select')
+        appointment_date = st.date_input("Select Date:", min_value=datetime.date.today(), key='date_input')
+        appointment_time = st.time_input("Select Time:", datetime.time(9, 0), step=60 * 30, key='time_input') # 30 min steps
+        selected_reason = st.selectbox("Reason for Appointment:", appointment_reasons, key='reason_select')
+        additional_notes = st.text_area("Additional Notes (optional):", key='notes_area')
+
+        submit_appointment = st.form_submit_button("Book Appointment")
+
+        if submit_appointment:
+            new_appointment = {
+                "doctor": selected_doctor,
+                "hospital": selected_hospital,
+                "date": appointment_date,
+                "time": appointment_time,
+                "reason": selected_reason,
+                "notes": additional_notes,
+                "status": "Booked"
+            }
+            if 'appointments' not in st.session_state:
+                st.session_state['appointments'] = []
+            st.session_state['appointments'].append(new_appointment)
+            st.success(f"Appointment with {selected_doctor} at {selected_hospital} on {appointment_date.strftime('%Y-%m-%d')} at {appointment_time.strftime('%H:%M')} has been booked!")
+            st.rerun() # Rerun to update the displayed appointments
+
+    st.subheader("Your Booked Appointments")
+
+    if 'appointments' in st.session_state and st.session_state['appointments']:
+        # Sort appointments by date and time
+        sorted_appointments = sorted(
+            st.session_state['appointments'],
+            key=lambda x: (x['date'], x['time'])
+        )
+
+        # Create a DataFrame for display purposes.
+        # Format date and time *after* sorting and *before* creating the display DataFrame
+        # to avoid the .dt accessor error.
+        display_data = []
+        for appt in sorted_appointments:
+            display_data.append({
+                "Date": appt['date'].strftime('%Y-%m-%d'),
+                "Time": appt['time'].strftime('%H:%M'),
+                "Doctor": appt['doctor'],
+                "Hospital": appt['hospital'],
+                "Reason": appt['reason'],
+                "Status": appt['status']
+            })
+        
+        display_df = pd.DataFrame(display_data)
+
+        st.dataframe(display_df, use_container_width=True, hide_index=True)
+
+        st.markdown("---")
+        st.subheader("Manage Appointments")
+
+        # Allow users to manage individual appointments
+        for i, appt in enumerate(sorted_appointments):
+            unique_key_prefix = f"appt_{i}"
+            with st.expander(f"Appointment: {appt['doctor']} on {appt['date'].strftime('%Y-%m-%d')} at {appt['time'].strftime('%H:%M')}"):
+                st.write(f"**Doctor:** {appt['doctor']}")
+                st.write(f"**Hospital:** {appt['hospital']}")
+                st.write(f"**Date:** {appt['date'].strftime('%Y-%m-%d')}")
+                st.write(f"**Time:** {appt['time'].strftime('%H:%M')}")
+                st.write(f"**Reason:** {appt['reason']}")
+                if appt['notes']:
+                    st.write(f"**Notes:** {appt['notes']}")
+                st.write(f"**Status:** {appt['status']}")
+
+                # Add Cancel button
+                if appt['status'] == "Booked":
+                    if st.button(f"Cancel Appointment", key=f"{unique_key_prefix}_cancel"):
+                        # Find the actual appointment object in the session state list and update its status
+                        # This is important because `sorted_appointments` is a copy.
+                        for session_appt in st.session_state['appointments']:
+                            if session_appt['doctor'] == appt['doctor'] and \
+                               session_appt['hospital'] == appt['hospital'] and \
+                               session_appt['date'] == appt['date'] and \
+                               session_appt['time'] == appt['time']:
+                                session_appt['status'] = "Cancelled"
+                                break
+                        st.success("Appointment cancelled.")
+                        st.rerun() # Rerun to update status
+                elif appt['status'] == "Cancelled":
+                    st.info("This appointment has been cancelled.")
+                
+                # Note: For simplicity, I'm not adding an "Edit" feature as it's more complex
+                # and might require re-validating time slots etc.
+    else:
+        st.info("You have no booked appointments yet.")
+
+
 def main():
     st.title('Diabetes Risk Prediction & Prevention Hub')
 
@@ -433,10 +585,14 @@ def main():
             {'title': 'Question about Diet', 'content': "What are some good low-sugar snack options?", 'comments': ["Nuts and seeds are a good choice!", "Greek yogurt with berries.", "Vegetable sticks with hummus."]},
             {'title': 'Exercise Tips', 'content': "Does anyone have advice for staying motivated to exercise regularly?"}
         ] # Initialize posts with some content
+    if 'appointments' not in st.session_state: # Initialize appointments list
+        st.session_state['appointments'] = []
+
 
     with st.sidebar:
         st.header("Navigation")
-        menu = ["Risk Assessment", "Prevention Articles", "Assessment History", "About", "Discussion Forum"] # Add to menu
+        # Add "Doctor Appointment" to the menu
+        menu = ["Risk Assessment", "Prevention Articles", "Assessment History", "Doctor Appointment", "About", "Discussion Forum"]
         choice = st.selectbox("Go to", menu)
         st.markdown("---")
         st.info("Developed by Healthcare & Coding Enthusiasts with the goal to better Sickness Prevention")
@@ -447,9 +603,11 @@ def main():
         articles_page()
     elif choice == "Assessment History":
         assessment_history_page()
+    elif choice == "Doctor Appointment": # Handle new menu item
+        doctor_appointment_page()
     elif choice == "About":
         about_page()
-    elif choice == "Discussion Forum": # Handle new menu item
+    elif choice == "Discussion Forum":
         discussion_forum_page()
 
 if __name__ == '__main__':
