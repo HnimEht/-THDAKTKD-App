@@ -258,7 +258,7 @@ def risk_assessment_page():
     # Centered button with clear call to action
     col_btn1, col_btn2, col_btn3 = st.columns([1,2,1])
     with col_btn2:
-        if st.button("✨ Get My Risk Assessment", use_container_width=True, type="primary):
+        if st.button("✨ Get My Risk Assessment", use_container_width=True, type="primary"):
             if loaded_model:
                 # Use actual input values, or default if None (left blank by user)
                 final_age = st.session_state[input_keys['age']] if st.session_state[input_keys['age']] is not None else DEFAULT_AGE
