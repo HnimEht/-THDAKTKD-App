@@ -143,17 +143,22 @@ def risk_assessment_page():
     # Initialize session state for inputs if they don't exist
     # Using specific keys for each input ensures uniqueness
     input_keys = {
-        'age': 'input_age', 'pregnancies': 'input_pregnancies', 'glucose': 'input_glucose',
+        'age': 'input_age', 'pregnancies': 'input_pregnancies', 'glucose': 'input_glucose', "waistline": "input_waistline",
         'blood_pressure': 'input_blood_pressure', 'skin_thickness': 'input_skin_thickness',
         'insulin': 'input_insulin', 'weight': 'input_weight', 'height': 'input_height',
-        'diabetes_pedigree_function': 'input_diabetes_pedigree_function'
+        'diabetes_pedigree_function': 'input_diabetes_pedigree_function', "fpg": "input_fpg", "ogtt":"input_ogtt"
     }
     for key in input_keys.values():
         if key not in st.session_state:
             st.session_state[key] = None
+    
+    # Initialize session state for symptoms
+    if 'selected_symptoms' not in st.session_state:
+        st.session_state['selected_symptoms'] = []
 
-    # Create tabs for Basic and Advanced Information
-    tab1, tab2, tab3 = st.tabs(["🧍 Basic Information", "🩺 Clinical Parameters", "✨ Quick Tips"])
+
+    # Create tabs for Basic, Clinical, Symptoms, and Quick Tips
+    tab1, tab2, tab3, tab4 = st.tabs(["🧍 Basic Information", "🩺 Clinical Parameters", "🤒 Recent Symptoms", "✨ Quick Tips"])
 
     with tab1:
         st.subheader("Your Personal Details")
@@ -173,7 +178,12 @@ def risk_assessment_page():
             help="For females, the number of times pregnant. (e.g., 0)",
             key='pregnancies_input_key'
         )
-
+        waistline_input = col1_basic.number_input(
+            'Waistline (cm)', min_value=0, max_value=20,
+            value=st.session_state[input_keys['waistline']],
+            help="Waistline",
+            key='waistline_input_key'
+        )
         weight_input = col2_basic.number_input(
             'Weight (kg)', min_value=20, max_value=300,
             value=st.session_state[input_keys['weight']],
@@ -236,6 +246,18 @@ def risk_assessment_page():
             help="A function that scores the likelihood of diabetes based on family history. (e.g., 0.5)",
             key='dpf_input_key'
         )
+        fast_plasma_glucose_input = col2_adv.number_input(
+            'Fast Plasma Glucose Input', min_value=0.0, max_value=3.0, step=0.001,
+            value=st.session_state[input_keys['fpg']],
+            help="Blood Sugar Amount when Hungry",
+            key='fpg_input_key'
+        )
+        oral_glucose_tolerance_test_input = col1_adv.number_input(
+            'Fast Plasma Glucose Input', min_value=0.0, max_value=3.0, step=0.001,
+            value=st.session_state[input_keys['ogtt']],
+            help="Blood Sugar Amount when Full",
+            key='ogtt_input_key'
+        )
 
         # Update session state with current input values
         st.session_state[input_keys['glucose']] = glucose_input
@@ -244,7 +266,37 @@ def risk_assessment_page():
         st.session_state[input_keys['insulin']] = insulin_input
         st.session_state[input_keys['diabetes_pedigree_function']] = diabetes_pedigree_function_input
     
-    with tab3:
+    with tab3: # New Tab for Symptoms
+        st.subheader("Do you have any of these recent symptoms?")
+        st.markdown("Tick all that apply. This information can help provide a more holistic assessment.")
+        
+        symptoms = [
+            "Increased Thirst (Polydipsia)",
+            "Frequent Urination (Polyuria)",
+            "Increased Hunger (Polyphagia)",
+            "Unexplained Weight Loss",
+            "Fatigue / Lack of Energy",
+            "Blurred Vision",
+            "Slow-Healing Sores / Wounds",
+            "Frequent Infections (e.g., skin, gums, bladder, vaginal)",
+            "Tingling or Numbness in Hands or Feet",
+            "Dry Itchy Skin"
+        ]
+        
+        selected_symptoms_current_run = []
+        for symptom in symptoms:
+            if st.checkbox(symptom, key=f"symptom_checkbox_{symptom.replace(' ', '_').replace('/', '_').lower()}"):
+                selected_symptoms_current_run.append(symptom)
+        
+        # Update session state with the selected symptoms
+        st.session_state['selected_symptoms'] = selected_symptoms_current_run
+
+        if st.session_state['selected_symptoms']:
+            st.info(f"You have selected: {', '.join(st.session_state['selected_symptoms'])}")
+        else:
+            st.info("No symptoms selected.")
+            
+    with tab4: # Original Quick Tips tab
         st.subheader("Quick Tips for Data Input")
         st.info("""
             * **Don't know a value?** Leave the field blank and we'll use a common default.
@@ -280,6 +332,12 @@ def risk_assessment_page():
 
                 # Display results immediately below the button
                 display_risk_interpretation(risk_level, risk_probability)
+
+                # Optionally, you could use selected_symptoms here to give more nuanced advice
+                if st.session_state['selected_symptoms']:
+                    st.write("---")
+                    st.warning(f"**Note on Symptoms:** You've indicated symptoms like: {', '.join(st.session_state['selected_symptoms'])}. While the main risk assessment is based on numerical inputs, these symptoms are important indicators. Please discuss them with a healthcare professional.")
+
             else:
                 st.error("Model not loaded. Cannot assess risk. Please contact support if this issue persists.")
 
@@ -702,99 +760,162 @@ def doctor_appointment_page():
         "Specialist Referral"
     ]
 
-    st.subheader("➕ Book a New Appointment")
-    with st.form(key='appointment_form', clear_on_submit=True):
-        col_doc, col_hosp = st.columns(2)
-        selected_doctor = col_doc.selectbox("Select Doctor:", doctors, key='doctor_select', help="Choose the specialist or general practitioner you wish to see.")
-        selected_hospital = col_hosp.selectbox("Select Hospital/Clinic:", hospitals, key='hospital_select', help="Where would you like your appointment to be held?")
-        
-        col_date, col_time = st.columns(2)
-        appointment_date = col_date.date_input("Select Date:", min_value=datetime.date.today(), key='date_input', help="Choose a date for your appointment.")
-        appointment_time = col_time.time_input("Select Time:", datetime.time(9, 0), step=datetime.timedelta(minutes=30), key='time_input', help="Choose a preferred time slot (30-minute intervals).")
-        
-        selected_reason = st.selectbox("Reason for Appointment:", appointment_reasons, key='reason_select', help="What is the main reason for this visit?")
-        additional_notes = st.text_area("Additional Notes (optional):", help="Provide any additional details that might be helpful for your doctor.", key='notes_area')
+    # Initialize chat history in session state
+    if 'chat_history' not in st.session_state:
+        st.session_state['chat_history'] = {} # Stores chat for each doctor: {doctor_name: [{sender: "Patient", message: "Hi"}, ...]}
 
-        submit_appointment = st.form_submit_button("✅ Book Appointment", type="primary", use_container_width=True)
+    # Create tabs for Booking and Chat
+    tab_booking, tab_chat = st.tabs(["➕ Book Appointment", "💬 Chat with Doctor"])
 
-        if submit_appointment:
-            new_appointment = {
-                "doctor": selected_doctor,
-                "hospital": selected_hospital,
-                "date": appointment_date,
-                "time": appointment_time,
-                "reason": selected_reason,
-                "notes": additional_notes,
-                "status": "Booked"
-            }
-            if 'appointments' not in st.session_state:
-                st.session_state['appointments'] = []
-            st.session_state['appointments'].append(new_appointment)
-            st.success(f"**Success!** Your appointment with **{selected_doctor}** at **{selected_hospital}** on **{appointment_date.strftime('%Y-%m-%d')}** at **{appointment_time.strftime('%H:%M')}** has been booked! You'll receive a confirmation shortly. ✉️")
-            st.balloons() # Add a little celebration
-            st.rerun() # Rerun to update the displayed appointments
+    with tab_booking:
+        st.subheader("Book a New Appointment")
+        with st.form(key='appointment_form', clear_on_submit=True):
+            col_doc, col_hosp = st.columns(2)
+            selected_doctor = col_doc.selectbox("Select Doctor:", doctors, key='doctor_select', help="Choose the specialist or general practitioner you wish to see.")
+            selected_hospital = col_hosp.selectbox("Select Hospital/Clinic:", hospitals, key='hospital_select', help="Where would you like your appointment to be held?")
+            
+            col_date, col_time = st.columns(2)
+            appointment_date = col_date.date_input("Select Date:", min_value=datetime.date.today(), key='date_input', help="Choose a date for your appointment.")
+            appointment_time = col_time.time_input("Select Time:", datetime.time(9, 0), step=datetime.timedelta(minutes=30), key='time_input', help="Choose a preferred time slot (30-minute intervals).")
+            
+            selected_reason = st.selectbox("Reason for Appointment:", appointment_reasons, key='reason_select', help="What is the main reason for this visit?")
+            additional_notes = st.text_area("Additional Notes (optional):", help="Provide any additional details that might be helpful for your doctor.", key='notes_area')
 
-    st.markdown("---")
-    st.subheader("📋 Your Booked Appointments")
+            submit_appointment = st.form_submit_button("✅ Book Appointment", type="primary", use_container_width=True)
 
-    if 'appointments' in st.session_state and st.session_state['appointments']:
-        # Sort appointments by date and time
-        sorted_appointments = sorted(
-            st.session_state['appointments'],
-            key=lambda x: (x['date'], x['time'])
-        )
-
-        # Create a DataFrame for display purposes.
-        display_data = []
-        for appt in sorted_appointments:
-            display_data.append({
-                "Date": appt['date'].strftime('%Y-%m-%d'),
-                "Time": appt['time'].strftime('%H:%M'),
-                "Doctor": appt['doctor'],
-                "Hospital": appt['hospital'],
-                "Reason": appt['reason'],
-                "Status": appt['status']
-            })
-        
-        display_df = pd.DataFrame(display_data)
-
-        st.dataframe(display_df, use_container_width=True, hide_index=True)
+            if submit_appointment:
+                new_appointment = {
+                    "doctor": selected_doctor,
+                    "hospital": selected_hospital,
+                    "date": appointment_date,
+                    "time": appointment_time,
+                    "reason": selected_reason,
+                    "notes": additional_notes,
+                    "status": "Booked"
+                }
+                if 'appointments' not in st.session_state:
+                    st.session_state['appointments'] = []
+                st.session_state['appointments'].append(new_appointment)
+                st.success(f"**Success!** Your appointment with **{selected_doctor}** at **{selected_hospital}** on **{appointment_date.strftime('%Y-%m-%d')}** at **{appointment_time.strftime('%H:%M')}** has been booked! You'll receive a confirmation shortly. ✉️")
+                st.balloons() # Add a little celebration
+                st.rerun() # Rerun to update the displayed appointments
 
         st.markdown("---")
-        st.subheader("⚙️ Manage Existing Appointments")
+        st.subheader("📋 Your Booked Appointments")
 
-        # Allow users to manage individual appointments
-        for i, appt in enumerate(sorted_appointments):
-            unique_key_prefix = f"appt_{i}"
-            status_color = "green" if appt['status'] == "Booked" else ("red" if appt['status'] == "Cancelled" else "orange")
-            with st.expander(f"**Appointment with {appt['doctor']} on {appt['date'].strftime('%Y-%m-%d')} at {appt['time'].strftime('%H:%M')}**"):
-                st.markdown(f"**Doctor:** `{appt['doctor']}`")
-                st.markdown(f"**Hospital:** `{appt['hospital']}`")
-                st.markdown(f"**Date:** `{appt['date'].strftime('%Y-%m-%d')}`")
-                st.markdown(f"**Time:** `{appt['time'].strftime('%H:%M')}`")
-                st.markdown(f"**Reason:** `{appt['reason']}`")
-                if appt['notes']:
-                    st.markdown(f"**Notes:** `{appt['notes']}`")
-                st.markdown(f"**Status:** <span style='color:{status_color}; font-weight:bold;'>{appt['status']}</span>", unsafe_allow_html=True)
+        if 'appointments' in st.session_state and st.session_state['appointments']:
+            # Sort appointments by date and time
+            sorted_appointments = sorted(
+                st.session_state['appointments'],
+                key=lambda x: (x['date'], x['time'])
+            )
 
-                # Add Cancel button
-                if appt['status'] == "Booked":
-                    if st.button(f"🚫 Cancel This Appointment", key=f"{unique_key_prefix}_cancel"):
-                        # Find the actual appointment object in the session state list and update its status
-                        for session_appt in st.session_state['appointments']:
-                            if session_appt['doctor'] == appt['doctor'] and \
-                               session_appt['hospital'] == appt['hospital'] and \
-                               session_appt['date'] == appt['date'] and \
-                               session_appt['time'] == appt['time']:
-                                session_appt['status'] = "Cancelled"
-                                break
-                        st.warning("Appointment has been cancelled.")
-                        st.rerun() # Rerun to update status
-                elif appt['status'] == "Cancelled":
-                    st.info("This appointment was previously cancelled.")
+            # Create a DataFrame for display purposes.
+            display_data = []
+            for appt in sorted_appointments:
+                display_data.append({
+                    "Date": appt['date'].strftime('%Y-%m-%d'),
+                    "Time": appt['time'].strftime('%H:%M'),
+                    "Doctor": appt['doctor'],
+                    "Hospital": appt['hospital'],
+                    "Reason": appt['reason'],
+                    "Status": appt['status']
+                })
+            
+            display_df = pd.DataFrame(display_data)
+
+            st.dataframe(display_df, use_container_width=True, hide_index=True)
+
+            st.markdown("---")
+            st.subheader("⚙️ Manage Existing Appointments")
+
+            # Allow users to manage individual appointments
+            for i, appt in enumerate(sorted_appointments):
+                unique_key_prefix = f"appt_{i}"
+                status_color = "green" if appt['status'] == "Booked" else ("red" if appt['status'] == "Cancelled" else "orange")
+                with st.expander(f"**Appointment with {appt['doctor']} on {appt['date'].strftime('%Y-%m-%d')} at {appt['time'].strftime('%H:%M')}**"):
+                    st.markdown(f"**Doctor:** `{appt['doctor']}`")
+                    st.markdown(f"**Hospital:** `{appt['hospital']}`")
+                    st.markdown(f"**Date:** `{appt['date'].strftime('%Y-%m-%d')}`")
+                    st.markdown(f"**Time:** `{appt['time'].strftime('%H:%M')}`")
+                    st.markdown(f"**Reason:** `{appt['reason']}`")
+                    if appt['notes']:
+                        st.markdown(f"**Notes:** `{appt['notes']}`")
+                    st.markdown(f"**Status:** <span style='color:{status_color}; font-weight:bold;'>{appt['status']}</span>", unsafe_allow_html=True)
+
+                    # Add Cancel button
+                    if appt['status'] == "Booked":
+                        if st.button(f"🚫 Cancel This Appointment", key=f"{unique_key_prefix}_cancel"):
+                            # Find the actual appointment object in the session state list and update its status
+                            for session_appt in st.session_state['appointments']:
+                                if session_appt['doctor'] == appt['doctor'] and \
+                                   session_appt['hospital'] == appt['hospital'] and \
+                                   session_appt['date'] == appt['date'] and \
+                                   session_appt['time'] == appt['time']:
+                                    session_appt['status'] = "Cancelled"
+                                    break
+                            st.warning("Appointment has been cancelled.")
+                            st.rerun() # Rerun to update status
+                    elif appt['status'] == "Cancelled":
+                        st.info("This appointment was previously cancelled.")
                 
-    else:
-        st.info("You currently have no booked appointments. Use the form above to schedule one!")
+        else:
+            st.info("You currently have no booked appointments. Use the form above to schedule one!")
+
+    with tab_chat:
+        st.subheader("Chat with Your Doctor (Simulated)")
+        st.info("This is a simulated chat for demonstration purposes. Messages are not persistent and do not connect to real doctors.")
+
+        # Allow user to select a doctor to chat with
+        chat_selected_doctor = st.selectbox("Select Doctor to Chat With:", doctors, key='chat_doctor_select')
+
+        # Initialize chat history for the selected doctor if it doesn't exist
+        if chat_selected_doctor not in st.session_state['chat_history']:
+            st.session_state['chat_history'][chat_selected_doctor] = []
+
+        # Display chat messages
+        st.markdown("---")
+        st.write("### Your Conversation")
+        if st.session_state['chat_history'][chat_selected_doctor]:
+            for msg in st.session_state['chat_history'][chat_selected_doctor]:
+                if msg['sender'] == "Patient":
+                    st.markdown(f"**You:** {msg['message']}")
+                else:
+                    st.markdown(f"**{chat_selected_doctor}:** {msg['message']}")
+        else:
+            st.info(f"Start a conversation with {chat_selected_doctor}.")
+        st.markdown("---")
+
+        # Chat input
+        with st.form(key='chat_form', clear_on_submit=True):
+            user_message = st.text_input(f"Message {chat_selected_doctor}:", key='chat_message_input')
+            col_send_btn, col_sim_reply_btn = st.columns(2)
+            send_button = col_send_btn.form_submit_button("Send Message", type="primary")
+            
+            # Simulate doctor reply button
+            simulate_doctor_reply = col_sim_reply_btn.form_submit_button("Simulate Doctor Reply", type="secondary")
+
+            if send_button:
+                if user_message:
+                    st.session_state['chat_history'][chat_selected_doctor].append({"sender": "Patient", "message": user_message})
+                    st.rerun()
+                else:
+                    st.warning("Please type a message to send.")
+            
+            if simulate_doctor_reply:
+                # Add a dummy doctor reply
+                dummy_replies = [
+                    "Hello! How can I assist you regarding your appointment?",
+                    "Please let me know if you have any urgent questions.",
+                    "I will review your notes before our scheduled appointment.",
+                    "We look forward to seeing you soon.",
+                    "Is there anything specific you would like to discuss?",
+                    "Thank you for reaching out. What's on your mind?"
+                ]
+                import random
+                doctor_reply = random.choice(dummy_replies)
+                st.session_state['chat_history'][chat_selected_doctor].append({"sender": chat_selected_doctor, "message": doctor_reply})
+                st.rerun()
 
 def main():
     st.title('💙 Diabetes Risk Prediction & Prevention Hub')
@@ -809,6 +930,9 @@ def main():
         st.session_state['posts'] = [] # Will be populated by display_posts with defaults
     if 'appointments' not in st.session_state:
         st.session_state['appointments'] = []
+    if 'chat_history' not in st.session_state: # Initialize chat history here
+        st.session_state['chat_history'] = {}
+    # No need to explicitly initialize 'selected_symptoms' here as it's handled within risk_assessment_page()
 
     with st.sidebar:
         st.header("🌐 Navigation Menu")
