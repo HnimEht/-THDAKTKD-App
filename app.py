@@ -383,6 +383,19 @@ def assessment_history_page():
     df_minh['timestamp'] = pd.to_datetime(df_minh['timestamp'])
     df_minh = df_minh.sort_values(by='timestamp')
 
+    # Fabricated future data for user 'minh' - for the next 6 months
+    minh_future_data = [
+        {'timestamp': datetime.datetime(current_year + 1, 6, 1), 'age': 36, 'glucose': 95, 'blood_pressure': 78, 'bmi': 24.5, 'risk_probability': 0.24},
+        {'timestamp': datetime.datetime(current_year + 1, 7, 1), 'age': 36, 'glucose': 94, 'blood_pressure': 77, 'bmi': 24.4, 'risk_probability': 0.22},
+        {'timestamp': datetime.datetime(current_year + 1, 8, 1), 'age': 36, 'glucose': 93, 'blood_pressure': 76, 'bmi': 24.3, 'risk_probability': 0.20},
+        {'timestamp': datetime.datetime(current_year + 1, 9, 1), 'age': 36, 'glucose': 92, 'blood_pressure': 75, 'bmi': 24.2, 'risk_probability': 0.18},
+        {'timestamp': datetime.datetime(current_year + 1, 10, 1), 'age': 37, 'glucose': 91, 'blood_pressure': 74, 'bmi': 24.1, 'risk_probability': 0.16},
+        {'timestamp': datetime.datetime(current_year + 1, 11, 1), 'age': 37, 'glucose': 90, 'blood_pressure': 73, 'bmi': 24.0, 'risk_probability': 0.14},
+    ]
+    df_minh_future = pd.DataFrame(minh_future_data)
+    df_minh_future['timestamp'] = pd.to_datetime(df_minh_future['timestamp'])
+    df_minh_future = df_minh_future.sort_values(by='timestamp')
+
     st.subheader("Filter Your Trend Data:")
     col_view_by, col_metric = st.columns(2)
 
@@ -391,10 +404,12 @@ def assessment_history_page():
 
     if view_by == "Month":
         df_minh['time_period'] = df_minh['timestamp'].dt.to_period('M').astype(str)
+        df_minh_future['time_period'] = df_minh_future['timestamp'].dt.to_period('M').astype(str)
         time_title = 'Month'
     else:
         # Format week to show year, e.g., "W22-2024"
         df_minh['time_period'] = 'W' + df_minh['timestamp'].dt.isocalendar().week.astype(str) + '-' + df_minh['timestamp'].dt.year.astype(str)
+        df_minh_future['time_period'] = 'W' + df_minh_future['timestamp'].dt.isocalendar().week.astype(str) + '-' + df_minh_future['timestamp'].dt.year.astype(str)
         time_title = 'Week'
 
     metrics_to_plot = {
@@ -408,7 +423,7 @@ def assessment_history_page():
         selected_metric_display = st.selectbox("Select Metric to Track:", list(metrics_to_plot.keys()), key="metric_select")
         selected_metric_column = metrics_to_plot[selected_metric_display]
 
-    st.subheader(f"{selected_metric_display} Over Time")
+    st.subheader(f"Current {selected_metric_display} Over Time")
     chart_metric = alt.Chart(df_minh).mark_line(point=True, color='#007bff').encode( # Blue line
         x=alt.X('time_period:O', title=time_title, axis=alt.Axis(labelAngle=-45)),
         y=alt.Y(f'{selected_metric_column}:Q', title=selected_metric_display),
@@ -421,6 +436,19 @@ def assessment_history_page():
     ).interactive()
     st.altair_chart(chart_metric, use_container_width=True)
 
+    st.subheader(f"Projected {selected_metric_display} (Future Prediction)")
+    chart_metric_future = alt.Chart(df_minh_future).mark_line(point=True, color='#FF5733', strokeDash=[5, 5]).encode( # Orange dashed line
+        x=alt.X('time_period:O', title=time_title, axis=alt.Axis(labelAngle=-45)),
+        y=alt.Y(f'{selected_metric_column}:Q', title=selected_metric_display),
+        tooltip=[
+            alt.Tooltip('timestamp:T', title='Date'),
+            alt.Tooltip(f'{selected_metric_column}:Q', title=selected_metric_display, format='.2f')
+        ]
+    ).properties(
+        title=f'Projected {selected_metric_display} Over Time'
+    ).interactive()
+    st.altair_chart(chart_metric_future, use_container_width=True)
+
     st.subheader("💡 Personalized Recommendations Based on Risk Trend:")
     if len(df_minh) >= 2:
         latest_risk = df_minh['risk_probability'].iloc[-1]
@@ -430,14 +458,14 @@ def assessment_history_page():
             st.success(
                 """
                 **Great News! Your risk probability has shown a positive trend, decreasing in the most recent assessment.** Keep up the excellent work!
-                
+
                 **To reinforce these healthy habits:**
                 * **Balanced Diet:** Continue prioritizing whole grains, fruits, vegetables, and lean proteins. Limit sugary drinks and processed foods.
                 * **Regular Activity:** Aim for consistent moderate-intensity physical activity.
                 * **Quality Sleep:** Prioritize 7-9 hours of restful sleep each night.
                 * **Stress Management:** Keep practicing relaxation techniques.
                 * **Hydration:** Drink plenty of water daily.
-                
+
                 Remember to consult your healthcare provider for ongoing guidance.
                 """
             )
@@ -445,7 +473,7 @@ def assessment_history_page():
             st.warning(
                 """
                 **Important! Your risk probability has increased in the recent assessment.** It's crucial to take proactive steps now.
-                
+
                 **Consider these actions:**
                 * **Diet Review:** Re-evaluate your diet to reduce sugar, unhealthy fats, and processed foods. A nutritionist's advice could be beneficial.
                 * **Boost Activity:** Gradually increase your physical activity. Find enjoyable ways to be active daily.
@@ -458,7 +486,7 @@ def assessment_history_page():
             st.info(
                 """
                 **Your risk probability has remained relatively stable in the recent assessment.** Consistency is key!
-                
+
                 **Continue to be diligent with your healthy lifestyle:**
                 * **Consistent Diet:** Maintain your balanced diet for stable blood sugar.
                 * **Maintain Exercise:** Keep up your regular physical activity routine.
