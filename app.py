@@ -167,7 +167,7 @@ def risk_assessment_page():
         
         # Using a more descriptive label and help text
         age_input = col1_basic.number_input(
-            'Age (Years)', min_value=0, max_value=120,
+            'Age', min_value=0, max_value=120,
             value=st.session_state[input_keys['age']],
             help="Your current age in years. (e.g., 30)",
             key='age_input_key'
